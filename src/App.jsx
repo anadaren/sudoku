@@ -2,30 +2,11 @@ import { useState } from 'react'
 import './App.css'
 import './Sudoku.js'
 
-let current = [
-  [0, 5, 0, 9, 0, 0, 0, 0, 0],
-  [8, 0, 0, 0, 4, 0, 3, 0, 7],
-  [0, 0, 0, 2, 8, 0, 1, 9, 0],
-  [5, 3, 8, 6, 0, 7, 9, 4, 0],
-  [0, 2, 0, 3, 0, 1, 0, 0, 0],
-  [1, 0, 9, 8, 0, 4, 6, 2, 3],
-  [9, 0, 7, 4, 0, 0, 0, 0, 0],
-  [0, 4, 5, 0, 0, 0, 2, 0, 9],
-  [0, 0, 0, 0, 3, 0, 0, 7, 0],
-];
+// Initial Board, all 0s
+let initial = Array.from({ length: 9 }, () => Array(9).fill(0));
 
-let initial = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
+// Current board being displayed
+let current = Array.from({ length: 9 }, () => Array(9).fill(0));
 
 function App() {
   const [sudokuArr, setSudokuArr] = useState(getDeepCopy(initial));
@@ -66,14 +47,15 @@ function App() {
 
   // function to reset current sudoku puzzle
   function resetSudoku() {
-    let sudoku = getDeepCopy(current); // TODO: change from initial to current
+    let sudoku = getDeepCopy(current);
     setSudokuArr(sudoku);
   }
 
   // function to generate new sudoku puzzle
   function newSudoku() {
-    let sudoku = current;//generateSudoku();
-    setSudokuArr(sudoku);
+    let sudoku = getDeepCopy(generateSudoku());
+    current = sudoku;
+    setSudokuArr(current);
   }
 
   function compareSudokus(currentSudoku, solvedSudoku) {
@@ -94,64 +76,69 @@ function App() {
     return resolution;
   }
 
+  function generateSudoku() {
+    // Generates empty grid, then solves it with random numbers
+    let sudoku = Array.from({ length: 9 }, () => Array(9).fill(0));
+    solver(sudoku);
+
+    // Deletes some elements from solved puzzle, based on difficulty level
+    let difficultyFactor = 0.2;     // TODO: set range from 0.3 to 0.
+
+    for(let i=0; i<9; i++) {
+      for(let j=0; j<9; j++) {
+        if(Math.random() > difficultyFactor) sudoku[i][j] = 0;
+      }
+    }
+
+    return sudoku;
+  }
+
   // sudoku solver logic
   function solver(grid, row=0, col=0) {
-    if(grid[row][col] !== 0) {
-      let isLast = row >= 8 && col >= 8;
-      if(!isLast){
-        let [newRow, newCol] = getNext(row, col);
-        return solver(grid, newRow, newCol);
+    for (row = 0; row < 9; row++) {
+      for (col = 0; col < 9; col++) {
+          if (grid[row][col] === 0) {
+              // Try all numbers from 1 to 9
+              const nums = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+              for (let num of nums) {
+                  if (isValid(grid, row, col, num)) {
+                      grid[row][col] = num;
+                      if (solver(grid)) {
+                          return true;
+                      }
+                      grid[row][col] = 0; // Backtrack
+                  }
+              }
+              return false; // No valid number found
+          }
       }
+  }
+  return true; // Board is complete
+  }
+
+  function isValid(board, row, col, num) {
+    for (let i = 0; i < 9; i++) {
+        // Check row
+        if (board[row][i] === num) return false;
+
+        // Check column
+        if (board[i][col] === num) return false;
+
+        // Check 3x3 grid
+        const boxRow = 3 * Math.floor(row / 3) + Math.floor(i / 3);
+        const boxCol = 3 * Math.floor(col / 3) + i % 3;
+        if (board[boxRow][boxCol] === num) return false;
     }
+    return true;
+  }
 
-    for(let i=0; i<=9; i++){
-      if(isValid(grid, row, col, i)) {
-        grid[row][col] = i;
-        let [newRow, newCol] = getNext(row, col);
-
-        if(!newRow && !newCol) {
-          return true;
-        }
-        if(solver(grid, newRow, newCol)) {
-          return true;
-        }
-      }
+  // Helper function to shuffle an array (Fisher-Yates shuffle)
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
-    grid[row][col] = 0;
-    return false;
-  }
-
-  function getNext(row, col) {
-    return col !== 8 ? [row, col + 1] : row != 8 ? [row + 1, 0] : [0,0];
-  }
-
-  // checks if sudoku cell is valid or not
-  function isValid(grid, row, col, value) {
-    if(checkRow(grid, row, value) && checkCol(grid, col, value) && checkBox(grid, row, col, value)) {
-      return true;
-    }
-    return false;
-  }
-
-  function checkRow(grid, row, value) {
-    return grid[row].indexOf(value) === -1;
-  }
-
-  function checkCol(grid, col, value) {
-    return grid.map(row => row[col]).indexOf(value) === -1;
-  }
-
-  function checkBox(grid, row, col, value) {
-    let boxArr = [],
-    rowStart = row - (row%3),
-    colStart = col - (col%3);
-    // Iterates through board
-    for(let i=0; i<3; i++){
-      for(let j=0; j<3; j++){
-      boxArr.push(grid[rowStart + i][colStart + j]);
-      }
-    }
-    return boxArr.indexOf(value) === -1;
+    return array;
   }
 
   return (
@@ -200,4 +187,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

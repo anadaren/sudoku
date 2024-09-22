@@ -43,8 +43,10 @@
 
 
 .title {
-  font-size: 42px;
+  font-size: 46px;
+  text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000;
 }
+
 
 .cellInput {
   width: 50px;
@@ -68,15 +70,6 @@ td {
 .buttonContainer {
   margin-top: 20px;
 }
-
-.solveButton {
-  margin: 0px 20px;
-}
-
-.newButton {
-  margin: 0px 20px;
-}
-
 
 .bBorder {
   border-bottom: 2px solid black;
