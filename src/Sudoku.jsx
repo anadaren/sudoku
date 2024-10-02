@@ -164,16 +164,16 @@ export const Sudoku = () => {
 
         <div className="buttonContainer">
             <button className="checkButton" onClick={checkSudoku}>
-            Check
+            <p>Check</p>
             </button>
             <button className="solveButton" onClick={solveSudoku}>
-            Solve
+            <p>Solve</p>
             </button>
             <button className="resetButton" onClick={resetSudoku}>
-            Reset
+            <p>Reset</p>
             </button>
             <button className="newButton" onClick={newSudoku}>
-            New Game
+            <p>New Game</p>
             </button>
         </div>
       </>

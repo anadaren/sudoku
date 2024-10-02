@@ -44,6 +44,7 @@
 
 .title {
   font-size: 46px;
+  margin: 20px;
   text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000;
 }
 
@@ -71,10 +72,53 @@ td {
   margin-top: 20px;
 }
 
+.buttonContainer p {
+  margin: 0;
+}
+
 .bBorder {
   border-bottom: 2px solid black;
 }
 
 .rBorder {
   border-right: 2px solid black;
+}
+
+@media (max-width: 991px) {
+
+  .title {
+    font-size: 32px;
+    margin: 15px;
+  }
+
+  table {
+    margin: 0 auto 0 auto;
+  }
+
+  .cellInput {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+  }
+
+  .buttonContainer {
+    margin: 0;
+  }
+
+  .buttonContainer button {
+    margin-top: 10px;
+    padding: 10px;
+    line-height: 12px;
+  }
+  
+  .buttonContainer p {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .credits {
+    font-size: 10px;
+  }
+
+
 }
