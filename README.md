@@ -2,4 +2,4 @@
 
 Simple Sudoku App made in React
 
-<img width="1000" alt="Screenshot 2024-09-21 at 3 02 28 AM" src="https://github.com/user-attachments/assets/2f9db0f0-6f31-4422-9116-9d9a9d47be5d">
+<img width="1059" alt="Screenshot 2025-02-12 at 12 17 11 AM" src="https://github.com/user-attachments/assets/fb028ac6-5bc1-45c6-928b-f76299faf6fb" />
