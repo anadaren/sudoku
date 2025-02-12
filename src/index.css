@@ -3,9 +3,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background: radial-gradient(#757575 10%, #242424 90%);
+  /*color-scheme: light dark;*/
+  color: rgba(255, 255, 255, 1);
+  background: #BCE3B3;
   
 
   font-synthesis: none;

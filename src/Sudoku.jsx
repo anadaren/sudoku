@@ -1,5 +1,7 @@
 // Written by Ana Green
-import { useState } from 'react'
+
+import { useState } from 'react';
+import { TopBar } from "./topbar.jsx";
 
 // Initial Board, all 0s
 let initial = Array.from({ length: 9 }, () => Array(9).fill(0));
@@ -8,13 +10,14 @@ let initial = Array.from({ length: 9 }, () => Array(9).fill(0));
 let current = Array.from({ length: 9 }, () => Array(9).fill(0));
 
 
-export const Sudoku = () => {
-    const [sudokuArr, setSudokuArr] = useState(getDeepCopy(initial));
-
+export const Sudoku = ({ sudokuArr, setSudokuArr }) => {
+  const [selectedCell, setSelectedCell] = useState(null);
+  
   function getDeepCopy(arr) {
     return JSON.parse(JSON.stringify(arr));
   }
 
+  // updates board when user fills out cells
   function onInputChange(e, row, col) {
     let val = parseInt(e.target.value) || 0, grid = getDeepCopy(sudokuArr);
     // input value should range from 1-9 and for empty cell it should be 0
@@ -24,7 +27,22 @@ export const Sudoku = () => {
     setSudokuArr(grid);
   }
 
-  // function to check sudoku is valid or not
+   // select a cell
+   function handleCellClick(row, col) {
+    setSelectedCell({ row, col });
+  }
+
+  // number buttons
+  function handleNumberClick(number) {
+    if (selectedCell) {
+      const { row, col } = selectedCell;
+      let grid = getDeepCopy(sudokuArr);
+      grid[row][col] = number;
+      setSudokuArr(grid);
+    }
+  }
+
+  // function to check if sudoku is valid or not
   function checkSudoku() {
     let sudoku = getDeepCopy(current);
     solver(sudoku);
@@ -84,13 +102,63 @@ export const Sudoku = () => {
     // Deletes some elements from solved puzzle, based on difficulty level
     let difficultyFactor = 0.2;     // TODO: set range from 0.3 to 0.
 
-    for(let i=0; i<9; i++) {
-      for(let j=0; j<9; j++) {
-        if(Math.random() > difficultyFactor) sudoku[i][j] = 0;
-      }
+
+    // Create a list of all cell positions
+    let cells = [];
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            cells.push([i, j]);
+        }
+    }
+
+    // Shuffle the cells to remove numbers randomly
+    cells = shuffleArray(cells);
+
+    // Remove numbers while ensuring the puzzle remains UNIQUELY solvable
+    for (let [i, j] of cells) {
+        if (Math.random() > difficultyFactor) {
+            // Save the original value
+            let originalValue = sudoku[i][j];
+            sudoku[i][j] = 0;
+
+            // Check if the puzzle still has a unique solution
+            let tempSudoku = sudoku.map(row => row.slice()); // Deep copy
+            if (!hasUniqueSolution(tempSudoku)) {
+                // If not, revert the removal
+                sudoku[i][j] = originalValue;
+            }
+        }
     }
 
     return sudoku;
+  }
+
+    // Function to check if the Sudoku has a unique solution
+  function hasUniqueSolution(grid) {
+    let count = 0;
+    function countSolutions(grid, row = 0, col = 0) {
+        for (row = 0; row < 9; row++) {
+            for (col = 0; col < 9; col++) {
+                if (grid[row][col] === 0) {
+                    for (let num = 1; num <= 9; num++) {
+                        if (isValid(grid, row, col, num)) {
+                            grid[row][col] = num;
+                            if (countSolutions(grid)) {
+                                count++;
+                                if (count > 1) return true; // Early exit if more than one solution
+                            }
+                            grid[row][col] = 0; // Backtrack
+                        }
+                    }
+                    return false; // No valid number found
+                }
+            }
+        }
+        return true; // Board is complete
+    }
+
+    countSolutions(grid);
+    return count === 1;
   }
 
   // sudoku solver logic
@@ -141,19 +209,27 @@ export const Sudoku = () => {
     return array;
   }
 
+ 
+
+
   return (
     <>
-        <table>
+        <TopBar checkSudoku={checkSudoku} solveSudoku={solveSudoku} resetSudoku={resetSudoku} newSudoku={newSudoku} />
+     
+        <div className='board flex justify-center'>
+        <table className='border-4 border-[#0B0D14] text-[#BCE3B3] border-collapse'>
             <tbody>
             {
                 [0, 1, 2, 3, 4, 5, 6, 7, 8].map((row, rIndex) => {
-                return <tr key={rIndex} className={(row + 1) % 3 === 0 ? "bBorder" : ""}>
+                return <tr key={rIndex} className={(row + 1) % 3 === 0 ? "bBorder border-b-2 border-[#0B0D14]" : ""}>
                     {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((col, cIndex) => {
-                    return <td key={rIndex + cIndex} className={(col + 1) % 3 === 0 ? "rBorder" : ""}>
-                        <input onChange={(e) => onInputChange(e, row, col)}
-                        value={sudokuArr[row][col] === 0 ? '' : sudokuArr[row][col]}
-                        className="cellInput"
-                        disabled={initial[row][col] !== 0}/>
+                    return <td key={rIndex + cIndex} className={(col + 1) % 3 === 0 ? "rBorder border-r-2 border-[#0B0D14] p-0" : "p-0"} onClick={() => handleCellClick(row, col)}>
+                        <input
+                          onChange={(e) => onInputChange(e, row, col)}
+                          value={sudokuArr[row][col] === 0 ? '' : sudokuArr[row][col]}
+                          className="cellInput border border-[#0B0D14] w-10 h-10 text-xl text-center bg-[#5D7774]"
+                          disabled={initial[row][col] !== 0}
+                        />
                     </td>
                     })}
                     </tr>
@@ -161,21 +237,18 @@ export const Sudoku = () => {
             }
             </tbody>
         </table>
-
-        <div className="buttonContainer">
-            <button className="checkButton" onClick={checkSudoku}>
-            <p>Check</p>
-            </button>
-            <button className="solveButton" onClick={solveSudoku}>
-            <p>Solve</p>
-            </button>
-            <button className="resetButton" onClick={resetSudoku}>
-            <p>Reset</p>
-            </button>
-            <button className="newButton" onClick={newSudoku}>
-            <p>New Game</p>
-            </button>
         </div>
+
+        <div className='numberContainer m-5'>
+            <ul className='flex justify-between text-[#BCE3B3]'>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (
+            <li key={number} className='cursor-pointer' onClick={() => handleNumberClick(number)}>
+              {number}
+            </li>
+            ))}
+            </ul>
+        </div>
+
       </>
-  );
+          );
 };

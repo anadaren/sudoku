@@ -1,124 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Autour+One&family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=DynaPuff:wght@400..700&family=Rubik+Wet+Paint&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 0rem;
   text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.credits {
-  color: #888;
-}
-
-
-.title {
-  font-size: 46px;
-  margin: 20px;
-  text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000;
-}
-
-
-.cellInput {
-  width: 50px;
-  height: 50px;
-  font-size: 20px;
-  text-align: center;
-  padding: 0px;
-  border: 1px solid black;
-}
-
-table {
-  border-collapse: collapse;
-  border: 3px solid black;
-  background-color: white;
-}
-
-td {
-  padding: 0;
-}
-
-.buttonContainer {
-  margin-top: 20px;
-}
-
-.buttonContainer p {
-  margin: 0;
-}
-
-.bBorder {
-  border-bottom: 2px solid black;
-}
-
-.rBorder {
-  border-right: 2px solid black;
-}
-
-@media (max-width: 991px) {
-
-  .title {
-    font-size: 32px;
-    margin: 15px;
-  }
-
-  table {
-    margin: 0 auto 0 auto;
-  }
-
-  .cellInput {
-    width: 30px;
-    height: 30px;
-    font-size: 20px;
-  }
-
-  .buttonContainer {
-    margin: 0;
-  }
-
-  .buttonContainer button {
-    margin-top: 10px;
-    padding: 10px;
-    line-height: 12px;
-  }
+  height: 100vh;
   
-  .buttonContainer p {
-    margin: 0;
-    font-size: 15px;
-  }
+  font-family: "DynaPuff", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
 
-  .credits {
-    font-size: 10px;
-  }
-
-
+li {
+  cursor: pointer;
+  background-color: #242C37;
+  padding: 7px;
+  border-radius: 5px;
+  font-size: 20px;
 }
