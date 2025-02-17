@@ -14,12 +14,26 @@
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+
+  --color1: #BCE3B3;
+  --color2:  #8FA88C;
+  --color3: #5D7774;
+  --color4: #242C37;
+  --color5: #0B0D14;
 }
+
 
 li {
   cursor: pointer;
-  background-color: #242C37;
-  padding: 7px;
+  background-color: var(--color5);
+  padding: 0 5px;
   border-radius: 5px;
-  font-size: 20px;
+  font-size: 36px;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: var(--color1);
+    max-height: 100vh;
+  }
 }

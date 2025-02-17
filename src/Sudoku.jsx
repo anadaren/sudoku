@@ -30,6 +30,7 @@ export const Sudoku = ({ sudokuArr, setSudokuArr }) => {
    // select a cell
    function handleCellClick(row, col) {
     setSelectedCell({ row, col });
+    
   }
 
   // number buttons
@@ -52,8 +53,9 @@ export const Sudoku = ({ sudokuArr, setSudokuArr }) => {
     } else if(compare.isSolvable) {
       alert("Good so far. Keep going!");
     } else {
-      alert("Sudoku can't be solved. Try again!");
+      alert("One or more cell is incorrect. Try again!");
     }
+    setSelectedCell(null);
   }
 
   // function to solve current sudoku puzzle
@@ -61,12 +63,14 @@ export const Sudoku = ({ sudokuArr, setSudokuArr }) => {
     let sudoku = getDeepCopy(current);
     solver(sudoku);
     setSudokuArr(sudoku);
+    setSelectedCell(null);
   }
 
   // function to reset current sudoku puzzle
   function resetSudoku() {
     let sudoku = getDeepCopy(current);
     setSudokuArr(sudoku);
+    setSelectedCell(null);
   }
 
   // function to generate new sudoku puzzle
@@ -74,6 +78,7 @@ export const Sudoku = ({ sudokuArr, setSudokuArr }) => {
     let sudoku = getDeepCopy(generateSudoku());
     current = sudoku;
     setSudokuArr(current);
+    setSelectedCell(null);
   }
 
   function compareSudokus(currentSudoku, solvedSudoku) {
@@ -127,7 +132,7 @@ export const Sudoku = ({ sudokuArr, setSudokuArr }) => {
                 // If not, revert the removal
                 sudoku[i][j] = originalValue;
             }
-        }
+        } else {/* let cell not be able to be edited */}
     }
 
     return sudoku;
@@ -217,29 +222,33 @@ export const Sudoku = ({ sudokuArr, setSudokuArr }) => {
         <TopBar checkSudoku={checkSudoku} solveSudoku={solveSudoku} resetSudoku={resetSudoku} newSudoku={newSudoku} />
      
         <div className='board flex justify-center'>
-        <table className='border-4 border-[#0B0D14] text-[#BCE3B3] border-collapse'>
+        <table className='border-4 border-[#0B0D14] text-[#0B0D14] border-collapse'>
             <tbody>
             {
                 [0, 1, 2, 3, 4, 5, 6, 7, 8].map((row, rIndex) => {
-                return <tr key={rIndex} className={(row + 1) % 3 === 0 ? "bBorder border-b-2 border-[#0B0D14]" : ""}>
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((col, cIndex) => {
-                    return <td key={rIndex + cIndex} className={(col + 1) % 3 === 0 ? "rBorder border-r-2 border-[#0B0D14] p-0" : "p-0"} onClick={() => handleCellClick(row, col)}>
-                        <input
-                          onChange={(e) => onInputChange(e, row, col)}
-                          value={sudokuArr[row][col] === 0 ? '' : sudokuArr[row][col]}
-                          className="cellInput border border-[#0B0D14] w-10 h-10 text-xl text-center bg-[#5D7774]"
-                          disabled={initial[row][col] !== 0}
-                        />
-                    </td>
-                    })}
-                    </tr>
+                  return <tr key={rIndex} className={(row + 1) % 3 === 0 ? "bBorder border-b-2 border-[#0B0D14]" : ""}>
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((col, cIndex) => {
+                        const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
+                        return <td key={rIndex + cIndex} className={`${(col + 1) % 3 === 0 ? "rBorder border-r-2 border-[#0B0D14] p-0" : "p-0"} ${isSelected ? "bg-[#fff]" : ""}`} onClick={() => handleCellClick(row, col)}>
+                              <input
+                              onChange={(e) => onInputChange(e, row, col)}
+                              value={sudokuArr[row][col] === 0 ? '' : sudokuArr[row][col]}
+                              className="cellInput rounded-none border border-[#0B0D14] w-10 h-10 text-3xl text-center cursor-pointer caret-transparent outline-none bg-[#8FA88C]"
+                              disabled={initial[row][col] !== 0}
+                              style={{
+                                backgroundColor: isSelected ? '#5D7774' : '',
+                                color: isSelected ? '#fff' : '',
+                              }} readOnly />
+                        </td>
+                      })}
+                      </tr>
                 })
             }
             </tbody>
         </table>
         </div>
 
-        <div className='numberContainer m-5'>
+        <div className='numberContainer my-5 mx-2'>
             <ul className='flex justify-between text-[#BCE3B3]'>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(number => (
             <li key={number} className='cursor-pointer' onClick={() => handleNumberClick(number)}>

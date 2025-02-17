@@ -20,11 +20,12 @@ function App() {
         </div>
       </div>}
 
-      <Sudoku setSudokuArr={setSudokuArr} sudokuArr={sudokuArr} />
+
+      {!isVisible && <div><Sudoku setSudokuArr={setSudokuArr} sudokuArr={sudokuArr} />
 
       <p className="text-xs right-auto m-5 text-[#0B0D14] sm:text-base">
       Made with 💚 by <a href="https://github.com/anadaren">anadaren</a>
-      </p>
+      </p></div>}
 
     </>
   )
